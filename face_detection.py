@@ -1,3 +1,5 @@
+import time
+
 import cv2
 
 face_cascade = cv2.CascadeClassifier(
@@ -6,6 +8,7 @@ face_cascade = cv2.CascadeClassifier(
 )
 
 cam = cv2.VideoCapture(0)
+prev_time = 0
 
 while True:
 
@@ -38,6 +41,34 @@ while True:
             (0, 255, 0),
             2
         )
+
+    current_time = time.time()
+
+    fps = 1 / (current_time - prev_time)
+
+    prev_time = current_time
+
+    cv2.putText(
+        frame,
+        f"FPS: {int(fps)}",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (255, 0, 0),
+        2
+    )
+
+    timestamp = time.strftime("%H:%M:%S")
+
+    cv2.putText(
+        frame,
+        timestamp,
+        (10, 60),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0, 255, 255),
+        2
+    )
 
     cv2.imshow("SentinelAI Face Detection", frame)
 
