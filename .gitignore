@@ -1,2 +1,4 @@
-.DS_Store
+recordings/
 snapshots/
+testfolder/
+.DS_Store
