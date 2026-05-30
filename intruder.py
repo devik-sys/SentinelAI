@@ -1,3 +1,4 @@
+from datetime import datetime
 import cv2
 import time
 import os
@@ -24,7 +25,6 @@ face_cascade = cv2.CascadeClassifier(
 
 cam = cv2.VideoCapture(0)
 
-# FIXED FRAME SIZE
 frame_width = 640
 frame_height = 480
 
@@ -62,7 +62,6 @@ snapshot_taken = False
 
 while cam.isOpened():
 
-    # DIFFERENCE BETWEEN FRAMES
     diff = cv2.absdiff(frame1, frame2)
 
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
@@ -117,30 +116,20 @@ while cam.isOpened():
     )
 
     # ----------------------------
-    # RECORD ONLY IF:
-    # MOTION + FACE
+    # MOTION + FACE REQUIRED
     # ----------------------------
 
     if motion_detected and len(faces) > 0:
 
         recording = True
 
-        cv2.putText(
-            frame1,
-            "INTRUDER DETECTED",
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 0, 255),
-            2
-        )
+        status = "RECORDING"
+        color = (0, 0, 255)
 
-        # SAVE SNAPSHOT ONCE
         if not snapshot_taken:
 
             snapshot_name = (
-                f"snapshots/intruder_"
-                f"{int(time.time())}.jpg"
+                f"snapshots/intruder_{int(time.time())}.jpg"
             )
 
             cv2.imwrite(
@@ -156,11 +145,15 @@ while cam.isOpened():
             snapshot_taken = True
 
     else:
+
         recording = False
         snapshot_taken = False
 
+        status = "MONITORING"
+        color = (0, 255, 0)
+
     # ----------------------------
-    # DRAW FACE BOX
+    # DRAW FACE BOXES
     # ----------------------------
 
     for (x, y, w, h) in faces:
@@ -172,6 +165,44 @@ while cam.isOpened():
             (0, 255, 0),
             2
         )
+
+    # ----------------------------
+    # CCTV OVERLAY
+    # ----------------------------
+
+    cv2.putText(
+        frame1,
+        status,
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        color,
+        2
+    )
+
+    cv2.putText(
+        frame1,
+        f"Faces: {len(faces)}",
+        (10, 70),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (255, 255, 255),
+        2
+    )
+
+    current_time = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    cv2.putText(
+        frame1,
+        current_time,
+        (10, 110),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.6,
+        (255, 255, 255),
+        2
+    )
 
     # ----------------------------
     # RECORD VIDEO
@@ -189,11 +220,12 @@ while cam.isOpened():
         frame1
     )
 
-    # SHIFT FRAMES
     frame1 = frame2
     ret, frame2 = cam.read()
 
-    # EXIT
+    if not ret:
+        break
+
     if cv2.waitKey(1) == ord('q'):
         break
 
@@ -203,5 +235,4 @@ while cam.isOpened():
 
 cam.release()
 out.release()
-
 cv2.destroyAllWindows()
