@@ -1,4 +1,5 @@
 recordings/
 snapshots/
 testfolder/
-.DS_Store
+.DS_Storeintruder_v1.py
+intruder_v2.py
