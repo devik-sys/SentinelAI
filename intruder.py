@@ -3,12 +3,101 @@ import cv2
 import time
 import os
 
+import smtplib
+from email.message import EmailMessage
+
 # ----------------------------
 # CREATE FOLDERS
 # ----------------------------
 
 os.makedirs("recordings", exist_ok=True)
 os.makedirs("snapshots", exist_ok=True)
+
+# ----------------------------
+# EMAIL SETTINGS
+# ----------------------------
+
+EMAIL_ADDRESS = "YOUR_EMAIL"
+EMAIL_PASSWORD = "YOUR_APP_PASSWORD"
+
+last_email_time = 0
+EMAIL_COOLDOWN = 60
+
+def send_email_alert(snapshot_path):
+
+    try:
+
+        msg = EmailMessage()
+
+        msg["Subject"] = "🚨 SentinelAI Alert"
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = EMAIL_ADDRESS
+
+        msg.set_content(
+            f"""
+🚨 SENTINELAI ALERT 🚨
+
+Motion and face detected.
+
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Action Taken:
+✅ Snapshot Captured
+✅ Video Recording Started
+✅ Email Alert Sent
+
+Check SentinelAI recordings and snapshots.
+"""
+        )
+
+        with open(snapshot_path, "rb") as image_file:
+
+            image_data = image_file.read()
+
+            image_name = os.path.basename(snapshot_path)
+
+            msg.add_attachment(
+                image_data,
+                maintype="image",
+                subtype="jpeg",
+                filename=image_name
+            )
+
+        with smtplib.SMTP_SSL(
+            "smtp.gmail.com",
+            465
+        ) as smtp:
+
+            smtp.login(
+                EMAIL_ADDRESS,
+                EMAIL_PASSWORD
+            )
+
+            smtp.send_message(msg)
+
+        print("📧 Email Alert Sent!")
+
+    except Exception as e:
+
+        print("Email Error:", e)
+
+        with smtplib.SMTP_SSL(
+            "smtp.gmail.com",
+            465
+        ) as smtp:
+
+            smtp.login(
+                EMAIL_ADDRESS,
+                EMAIL_PASSWORD
+            )
+
+            smtp.send_message(msg)
+
+        print("📧 Email Alert Sent!")
+
+    except Exception as e:
+
+        print("Email Error:", e)
 
 # ----------------------------
 # FACE DETECTOR
@@ -61,6 +150,8 @@ snapshot_taken = False
 # ----------------------------
 
 while cam.isOpened():
+
+    current_time = time.time()
 
     diff = cv2.absdiff(frame1, frame2)
 
@@ -143,6 +234,17 @@ while cam.isOpened():
             )
 
             snapshot_taken = True
+
+            current_time = time.time()
+
+            if (
+                current_time - last_email_time
+                > EMAIL_COOLDOWN
+            ):
+
+                send_email_alert(snapshot_name)
+
+                last_email_time = current_time
 
     else:
 
@@ -235,4 +337,8 @@ while cam.isOpened():
 
 cam.release()
 out.release()
+
+
+
+
 cv2.destroyAllWindows()
