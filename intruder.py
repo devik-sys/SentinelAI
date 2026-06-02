@@ -13,6 +13,8 @@ from email.message import EmailMessage
 os.makedirs("recordings", exist_ok=True)
 os.makedirs("snapshots", exist_ok=True)
 
+os.makedirs("logs", exist_ok=True)
+
 # ----------------------------
 # EMAIL SETTINGS
 # ----------------------------
@@ -98,6 +100,21 @@ Check SentinelAI recordings and snapshots.
     except Exception as e:
 
         print("Email Error:", e)
+
+def write_log(message):
+
+    current_time = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    with open(
+        "logs/events.txt",
+        "a"
+    ) as log_file:
+
+        log_file.write(
+            f"{current_time} | {message}\n"
+        )
 
 # ----------------------------
 # FACE DETECTOR
@@ -214,6 +231,8 @@ while cam.isOpened():
 
         recording = True
 
+        write_log("Motion + Face Detected")
+
         status = "RECORDING"
         color = (0, 0, 255)
 
@@ -233,6 +252,8 @@ while cam.isOpened():
                 snapshot_name
             )
 
+            write_log("Snapshot Saved")
+
             snapshot_taken = True
 
             current_time = time.time()
@@ -243,6 +264,8 @@ while cam.isOpened():
             ):
 
                 send_email_alert(snapshot_name)
+
+                write_log("Email Alert Sent")
 
                 last_email_time = current_time
 

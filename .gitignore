@@ -1,6 +1,7 @@
 recordings/
 snapshots/
 testfolder/
+logs/
 
 .DS_Store
 intruder_v1.py
