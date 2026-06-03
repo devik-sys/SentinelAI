@@ -19,8 +19,8 @@ os.makedirs("logs", exist_ok=True)
 # EMAIL SETTINGS
 # ----------------------------
 
-EMAIL_ADDRESS = "YOUR_EMAIL"
-EMAIL_PASSWORD = "YOUR_APP_PASSWORD"
+EMAIL_ADDRESS = "your@gmail.com"
+EMAIL_PASSWORD = "your_passwd"
 
 last_email_time = 0
 EMAIL_COOLDOWN = 60
@@ -162,6 +162,9 @@ ret, frame2 = cam.read()
 recording = False
 snapshot_taken = False
 
+recording_start_time = 0
+RECORD_DURATION = 15
+
 # ----------------------------
 # MAIN LOOP
 # ----------------------------
@@ -231,7 +234,19 @@ while cam.isOpened():
 
         recording = True
 
-        write_log("Motion + Face Detected")
+        if recording_start_time == 0:
+
+            recording_start_time = time.time()
+
+            write_log(
+                "Recording Started"
+            )
+
+            print(
+                "Recording Started"
+            )
+
+        # write_log("Motion + Face Detected")
 
         status = "RECORDING"
         color = (0, 0, 255)
@@ -271,12 +286,12 @@ while cam.isOpened():
 
     else:
 
-        recording = False
-        snapshot_taken = False
+        if recording_start_time == 0:
+
+            snapshot_taken = False
 
         status = "MONITORING"
         color = (0, 255, 0)
-
     # ----------------------------
     # DRAW FACE BOXES
     # ----------------------------
@@ -334,8 +349,23 @@ while cam.isOpened():
     # ----------------------------
 
     if recording:
+
         out.write(frame1)
 
+        if (
+            time.time() - recording_start_time
+            > RECORD_DURATION
+        ):
+
+            recording = False
+
+            recording_start_time = 0
+
+            snapshot_taken = False
+
+            write_log("Recording Stopped")
+
+            print("Recording Stopped")
     # ----------------------------
     # SHOW WINDOW
     # ----------------------------
