@@ -19,8 +19,8 @@ os.makedirs("logs", exist_ok=True)
 # EMAIL SETTINGS
 # ----------------------------
 
-EMAIL_ADDRESS = "your@gmail.com"
-EMAIL_PASSWORD = "your_passwd"
+EMAIL_ADDRESS = "YOUR_EMAIL"
+EMAIL_PASSWORD = "YOUR_APP_PASSWORD"
 
 last_email_time = 0
 EMAIL_COOLDOWN = 60
@@ -165,6 +165,8 @@ snapshot_taken = False
 recording_start_time = 0
 RECORD_DURATION = 15
 
+intrusion_count = 0
+
 # ----------------------------
 # MAIN LOOP
 # ----------------------------
@@ -237,9 +239,11 @@ while cam.isOpened():
         if recording_start_time == 0:
 
             recording_start_time = time.time()
+            
+            intrusion_count += 1
 
             write_log(
-                "Recording Started"
+                f"Recording Started | Intrusion #{intrusion_count}"
             )
 
             print(
@@ -324,6 +328,16 @@ while cam.isOpened():
         frame1,
         f"Faces: {len(faces)}",
         (10, 70),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (255, 255, 255),
+        2
+    )
+
+    cv2.putText(
+        frame1,
+        f"Intrusions: {intrusion_count}",
+        (10, 140),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.8,
         (255, 255, 255),
