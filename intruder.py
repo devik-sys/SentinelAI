@@ -143,14 +143,7 @@ cam.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
-video_name = f"recordings/intruder_{int(time.time())}.mov"
-
-out = cv2.VideoWriter(
-    video_name,
-    fourcc,
-    20.0,
-    (frame_width, frame_height)
-)
+out = None
 
 # ----------------------------
 # MOTION VARIABLES
@@ -165,7 +158,12 @@ snapshot_taken = False
 recording_start_time = 0
 RECORD_DURATION = 15
 
-intrusion_count = 0
+existing_files = [
+    f for f in os.listdir("recordings")
+    if f.startswith("intruder_") and f.endswith(".mov")
+]
+
+intrusion_count = len(existing_files)
 
 # ----------------------------
 # MAIN LOOP
@@ -239,6 +237,19 @@ while cam.isOpened():
         if recording_start_time == 0:
 
             recording_start_time = time.time()
+
+            intrusion_count += 1
+
+            video_name = (
+                f"recordings/intruder_{intrusion_count}.mov"
+            )
+
+            out = cv2.VideoWriter(
+                video_name,
+                fourcc,
+                20.0,
+                (frame_width, frame_height)
+            )
             
             intrusion_count += 1
 
@@ -374,6 +385,9 @@ while cam.isOpened():
             recording = False
 
             recording_start_time = 0
+
+            if out:
+                out.release()
 
             snapshot_taken = False
 
