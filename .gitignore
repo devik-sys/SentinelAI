@@ -2,6 +2,10 @@ recordings/
 snapshots/
 logs/
 faces/
+unknown_faces/
+
+trainer.yml
+intrusion_log.txt
 
 __pycache__/
 .DS_Store

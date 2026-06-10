@@ -1,4 +1,6 @@
 import cv2
+import os
+from datetime import datetime
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read("trainer.yml")
@@ -9,6 +11,7 @@ face_cascade = cv2.CascadeClassifier(
 )
 
 cap = cv2.VideoCapture(0)
+alert_sent = False
 
 while True:
 
@@ -30,6 +33,9 @@ while True:
 
     for (x, y, w, h) in faces:
 
+        if len(faces) == 0:
+            alert_sent = False
+
         face = gray[y:y+h, x:x+w]
 
         label, confidence = recognizer.predict(face)
@@ -37,15 +43,38 @@ while True:
         if confidence < 80:
             name = "Devi"
         else:
+
             name = "Unknown"
 
-        cv2.rectangle(
-            frame,
-            (x, y),
-            (x+w, y+h),
-            (0, 255, 0),
-            2
-        )
+            if not alert_sent:
+
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+                filename = f"unknown_faces/unknown_{timestamp}.jpg"
+
+                cv2.imwrite(
+                    filename,
+                    frame
+                )
+
+                print(f"Saved: {filename}")
+                
+                with open("intrusion_log.txt", "a") as log:
+
+                    log.write(
+                        f"{datetime.now()} - Unknown Person Detected - {filename}\n"
+                    )
+
+                print("ALERT: Unknown Person Detected!")
+
+                alert_sent = True
+            cv2.rectangle(
+                frame,
+                (x, y),
+                (x+w, y+h),
+                (0, 255, 0),
+                2
+            )
 
         cv2.putText(
             frame,
