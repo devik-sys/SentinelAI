@@ -33,20 +33,41 @@ while True:
 
     for (x, y, w, h) in faces:
 
-        if len(faces) == 0:
-            alert_sent = False
-
         face = gray[y:y+h, x:x+w]
 
         label, confidence = recognizer.predict(face)
 
         if confidence < 80:
-            name = "Devi"
+
+            name = "ACCESS GRANTED"
+
+            color = (0, 255, 0)
+
         else:
 
-            name = "Unknown"
+            name = "INTRUDER ALERT"
 
-            if not alert_sent:
+            color = (0, 0, 255)
+
+        cv2.rectangle(
+                frame,
+                (x, y),
+                (x+w, y+h),
+                color,
+                2
+            )
+
+        cv2.putText(
+            frame,
+            name,
+            (x, y-10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            color,
+            2
+        )
+
+        if not alert_sent:
 
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -58,7 +79,7 @@ while True:
                 )
 
                 print(f"Saved: {filename}")
-                
+
                 with open("intrusion_log.txt", "a") as log:
 
                     log.write(
@@ -68,23 +89,9 @@ while True:
                 print("ALERT: Unknown Person Detected!")
 
                 alert_sent = True
-            cv2.rectangle(
-                frame,
-                (x, y),
-                (x+w, y+h),
-                (0, 255, 0),
-                2
-            )
 
-        cv2.putText(
-            frame,
-            name,
-            (x, y-10),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.8,
-            (0, 255, 0),
-            2
-        )
+    if len(faces) == 0:
+        alert_sent = False
 
     cv2.imshow(
         "Face Recognition",
