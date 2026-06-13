@@ -5,6 +5,7 @@ import os
 
 import smtplib
 from email.message import EmailMessage
+from email_config import EMAIL_ADDRESS, EMAIL_PASSWORD
 
 # ----------------------------
 # CREATE FOLDERS
@@ -18,9 +19,6 @@ os.makedirs("logs", exist_ok=True)
 # ----------------------------
 # EMAIL SETTINGS
 # ----------------------------
-
-EMAIL_ADDRESS = "YOUR_EMAIL"
-EMAIL_PASSWORD = "YOUR_APP_PASSWORD"
 
 last_email_time = 0
 EMAIL_COOLDOWN = 60
@@ -47,8 +45,6 @@ Action Taken:
 ✅ Snapshot Captured
 ✅ Video Recording Started
 ✅ Email Alert Sent
-
-Check SentinelAI recordings and snapshots.
 """
         )
 
@@ -83,23 +79,6 @@ Check SentinelAI recordings and snapshots.
 
         print("Email Error:", e)
 
-        with smtplib.SMTP_SSL(
-            "smtp.gmail.com",
-            465
-        ) as smtp:
-
-            smtp.login(
-                EMAIL_ADDRESS,
-                EMAIL_PASSWORD
-            )
-
-            smtp.send_message(msg)
-
-        print("📧 Email Alert Sent!")
-
-    except Exception as e:
-
-        print("Email Error:", e)
 
 def write_log(message):
 
