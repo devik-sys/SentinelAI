@@ -5,6 +5,11 @@ faces/
 unknown_faces/
 
 trainer.yml
+
+email_config.py
+.gitignore.save
+email_alert.py
+
 intrusion_log.txt
 
 __pycache__/
