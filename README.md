@@ -1,74 +1,72 @@
-# SentinelAI 🚨
+# SentinelAI
 
-AI-powered smart surveillance system built using Python and OpenCV.
+AI-Powered Smart Surveillance System
 
 ## Features
 
-* Motion Detection
-* Face Detection
-* Intrusion Detection
+* Motion Detection using OpenCV
+* Face Detection using Haar Cascade
+* Face Recognition using LBPH Recognizer
+* Authorized User Access Control
+* Intruder Detection
 * Snapshot Capture
+* Automatic Video Recording
 * Email Alert System
-* Event Logging
-* Intrusion Counter
-* Smart 15-Second Recording
-* Separate Video Recording Per Intrusion
-* Real-Time Monitoring
+* Intrusion Logging
 
-## Technologies Used
+## Tech Stack
 
 * Python
 * OpenCV
-* Haar Cascade Face Detection
+* LBPH Face Recognition
 * SMTP Email Alerts
+* NumPy
 
-## Project Structure
+## Project Workflow
 
-```text
+1. Camera monitors surroundings
+2. Motion is detected
+3. Face is detected
+4. Face Recognition verifies identity
+
+### Known User
+
+* Access Granted
+* No alert generated
+
+### Unknown User
+
+* Snapshot captured
+* Video recording started
+* Email alert sent
+* Intrusion logged
+
+## Folder Structure
+
 EdgeAI/
-│
-├── intruder.py
-├── recordings/
+├── face_recognition.py
+├── recognize_face.py
+├── collect_faces.py
+├── train_model.py
+├── trainer.yml
 ├── snapshots/
-├── screenshots/
+├── recordings/
 ├── logs/
+├── known_faces/
 └── README.md
-```
-
-## Workflow
-
-1. Detect Motion
-2. Detect Face
-3. Capture Snapshot
-4. Send Email Alert
-5. Start Recording
-6. Save Intrusion Video
-7. Store Event Logs
-
-## Screenshots
-
-### Monitoring Mode
-
-![Monitoring Mode](screenshots/monitoring_mode.png)
-
-### Recording Mode
-
-![Recording Mode](screenshots/recording_mode.png)
 
 ## Future Improvements
 
-* Face Recognition
-* YOLO Object Detection
-* Raspberry Pi Deployment
-* Edge AI Optimization
-* Telegram Alerts
+* DeepFace Integration
+* Real-Time Dashboard
+* Cloud Storage
 * Mobile Notifications
+* Multi-User Recognition
 
 ## Author
 
 Devi Krishna Manoj
 
-B.Tech Electronics and Communication Engineering
+Electronics and Communication Engineering Student
 
-Edge AI Enthusiast
-
+Building AI, Computer Vision and Edge AI Projects
