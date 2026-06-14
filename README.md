@@ -1,48 +1,76 @@
-# SentinelAI
+# 🛡️ SentinelAI
 
-AI-Powered Smart Surveillance System
+### AI-Powered Smart Surveillance System using OpenCV & Edge AI
 
-## Features
+An intelligent surveillance system that detects motion, recognizes authorized users, identifies intruders, records evidence, and sends real-time email alerts.
 
-* Motion Detection using OpenCV
-* Face Detection using Haar Cascade
-* Face Recognition using LBPH Recognizer
-* Authorized User Access Control
-* Intruder Detection
-* Snapshot Capture
-* Automatic Video Recording
-* Email Alert System
-* Intrusion Logging
+---
 
-## Tech Stack
+## 📸 Project Preview
 
-* Python
-* OpenCV
-* LBPH Face Recognition
-* SMTP Email Alerts
-* NumPy
+### Monitoring Mode
 
-## Project Workflow
+![Monitoring](screenshots/monitoring.png)
 
-1. Camera monitors surroundings
-2. Motion is detected
-3. Face is detected
-4. Face Recognition verifies identity
+### Intruder Detection & Recording
 
-### Known User
+![Recording](screenshots/recording.png)
 
-* Access Granted
-* No alert generated
+---
 
-### Unknown User
+## 🚀 Features
 
-* Snapshot captured
-* Video recording started
-* Email alert sent
-* Intrusion logged
+* 🎯 Motion Detection
+* 👤 Face Detection
+* 🧠 LBPH Face Recognition
+* ✅ Authorized User Verification
+* 🚨 Intruder Detection
+* 📸 Snapshot Capture
+* 🎥 Automatic Video Recording
+* 📧 Email Alerts
+* 📝 Intrusion Logging
 
-## Folder Structure
+---
 
+## ⚙️ System Workflow
+
+text
+Camera Feed
+     ↓
+Motion Detection
+     ↓
+Face Detection
+     ↓
+Face Recognition
+     ↓
+ ┌───────────────┬───────────────┐
+ │ Known User    │ Unknown User  │
+ └───────────────┴───────────────┘
+         ↓                 ↓
+ Access Granted    Intruder Alert
+                   Snapshot Saved
+                   Recording Started
+                   Email Sent
+                   Event Logged
+
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose          |
+| ---------- | ---------------- |
+| Python     | Core Development |
+| OpenCV     | Computer Vision  |
+| LBPH       | Face Recognition |
+| SMTP       | Email Alerts     |
+| NumPy      | Image Processing |
+
+---
+
+## 📂 Project Structure
+
+text
 EdgeAI/
 ├── face_recognition.py
 ├── recognize_face.py
@@ -52,21 +80,28 @@ EdgeAI/
 ├── snapshots/
 ├── recordings/
 ├── logs/
-├── known_faces/
+├── screenshots/
+│   ├── monitoring.png
+│   └── recording.png
 └── README.md
 
-## Future Improvements
+---
+
+## 🔮 Future Improvements
 
 * DeepFace Integration
-* Real-Time Dashboard
+* Multi-User Recognition
 * Cloud Storage
 * Mobile Notifications
-* Multi-User Recognition
+* Real-Time Dashboard
+* Web-Based Monitoring Panel
 
-## Author
+---
 
-Devi Krishna Manoj
+## 👨‍💻 Author
 
-Electronics and Communication Engineering Student
+### Devi Krishna Manoj
 
-Building AI, Computer Vision and Edge AI Projects
+ECE Student • Edge AI • Computer Vision • AI Automation
+
+Building intelligent systems at the intersection of AI and embedded technologies.
