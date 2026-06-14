@@ -104,6 +104,9 @@ face_cascade = cv2.CascadeClassifier(
     "haarcascade_frontalface_default.xml"
 )
 
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read("trainer.yml")
+
 # ----------------------------
 # CAMERA
 # ----------------------------
@@ -205,11 +208,62 @@ while cam.isOpened():
         4
     )
 
+    known_face_detected = False
+
+    for (x, y, w, h) in faces:
+
+        face = gray_frame[y:y+h, x:x+w]
+
+        label, confidence = recognizer.predict(face)
+
+        if confidence < 100:
+
+            known_face_detected = True
+
+            cv2.rectangle(
+                frame1,
+                (x, y),
+                (x+w, y+h),
+                (0, 255, 0),
+                2
+            )
+
+            cv2.putText(
+                frame1,
+                "ACCESS GRANTED",
+                (x, y-10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 255, 0),
+                2
+            )
+
+        else:
+
+            cv2.rectangle(
+                frame1,
+                (x, y),
+                (x+w, y+h),
+                (0, 0, 255),
+                2
+            )
+
+            cv2.putText(
+                frame1,
+                "INTRUDER ALERT",
+                (x, y-10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 0, 255),
+                2
+            )
+
     # ----------------------------
     # MOTION + FACE REQUIRED
     # ----------------------------
 
-    if motion_detected and len(faces) > 0:
+
+    if motion_detected and len(faces) > 0 and not known_face_detected:
 
         recording = True
 
@@ -396,8 +450,9 @@ while cam.isOpened():
 # ----------------------------
 
 cam.release()
-out.release()
 
+if out:
+    out.release()
 
 
 
