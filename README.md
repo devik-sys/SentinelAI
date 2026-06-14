@@ -1,6 +1,6 @@
 # 🛡️ SentinelAI
 
-### AI-Powered Smart Surveillance System using OpenCV & Edge AI
+## AI-Powered Smart Surveillance System using OpenCV & Edge AI
 
 An intelligent surveillance system that detects motion, recognizes authorized users, identifies intruders, records evidence, and sends real-time email alerts.
 
@@ -10,11 +10,11 @@ An intelligent surveillance system that detects motion, recognizes authorized us
 
 ### Monitoring Mode
 
-![Monitoring](screenshots/monitoring.png)
+![Monitoring](screenshots/monitoring_mode.png)
 
 ### Intruder Detection & Recording
 
-![Recording](screenshots/recording.png)
+![Recording](screenshots/recording_mode.png)
 
 ---
 
@@ -32,27 +32,26 @@ An intelligent surveillance system that detects motion, recognizes authorized us
 
 ---
 
-## ⚙️ System Workflow
+## ⚙️ How It Works
 
-text
-Camera Feed
-     ↓
-Motion Detection
-     ↓
-Face Detection
-     ↓
-Face Recognition
-     ↓
- ┌───────────────┬───────────────┐
- │ Known User    │ Unknown User  │
- └───────────────┴───────────────┘
-         ↓                 ↓
- Access Granted    Intruder Alert
-                   Snapshot Saved
-                   Recording Started
-                   Email Sent
-                   Event Logged
+1. Camera continuously monitors surroundings
+2. Motion is detected
+3. Face is detected
+4. Face Recognition verifies identity
 
+### Known User
+
+* Access Granted
+* No Alert Generated
+* No Recording Started
+
+### Unknown User
+
+* Intruder Alert Triggered
+* Snapshot Captured
+* Video Recording Started
+* Email Alert Sent
+* Event Logged
 
 ---
 
@@ -70,7 +69,7 @@ Face Recognition
 
 ## 📂 Project Structure
 
-text
+```text
 EdgeAI/
 ├── face_recognition.py
 ├── recognize_face.py
@@ -81,9 +80,10 @@ EdgeAI/
 ├── recordings/
 ├── logs/
 ├── screenshots/
-│   ├── monitoring.png
-│   └── recording.png
+│   ├── monitoring_mode.png
+│   └── recording_mode.png
 └── README.md
+```
 
 ---
 
@@ -91,7 +91,7 @@ EdgeAI/
 
 * DeepFace Integration
 * Multi-User Recognition
-* Cloud Storage
+* Cloud Storage Integration
 * Mobile Notifications
 * Real-Time Dashboard
 * Web-Based Monitoring Panel
@@ -102,6 +102,7 @@ EdgeAI/
 
 ### Devi Krishna Manoj
 
-ECE Student • Edge AI • Computer Vision • AI Automation
+ECE Student | Edge AI | Computer Vision | AI Automation
 
-Building intelligent systems at the intersection of AI and embedded technologies.
+Building intelligent systems at the intersection of AI, Embedded Systems, and Computer Vision.
+
