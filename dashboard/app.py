@@ -51,6 +51,8 @@ def home():
 
     <head>
 
+    <meta http-equiv="refresh" content="5">
+
     <title>SentinelAI Dashboard</title>
 
     <style>
