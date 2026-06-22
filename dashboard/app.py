@@ -1,8 +1,54 @@
+import time
+import cv2
+from flask import Response
 from flask import Flask
 import os
 
 app = Flask(__name__)
 print(os.getcwd())
+
+camera = cv2.VideoCapture(0)
+
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+print("Camera Open:", camera.isOpened())
+
+def generate_frames():
+
+    while True:
+
+        print("Streaming frame")
+
+        success, frame = camera.read()
+
+        if not success:
+            break
+
+        else:
+
+            _, buffer = cv2.imencode(
+                ".jpg",
+                frame
+            )
+
+            frame = buffer.tobytes()
+
+            yield (
+                b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n'
+                + frame +
+                b'\r\n'
+            )
+
+@app.route("/video_feed")
+def video_feed():
+
+    return Response(
+        generate_frames(),
+        mimetype=
+        'multipart/x-mixed-replace; boundary=frame'
+    )
 
 @app.route("/")
 def home():
@@ -27,12 +73,12 @@ def home():
                 os.path.join("snapshots", x)
             )
         )
-        print(images)
-        print("Latest:", latest_image)
 
         if images:
 
             latest_image = images[-1]
+
+            print("Latest image:", latest_image)
 
     image_html = ""
 
@@ -40,7 +86,7 @@ def home():
 
         image_html = f"""
         <h3>Latest Snapshot</h3>
-        <img src="/snapshot/{latest_image}"
+        <img src="/snapshot/{latest_image}?t={time.time()}"
         width="500">
         """
 
@@ -104,6 +150,16 @@ def home():
 
     <div class="card">
 
+    <h2>🎥 Live Camera Feed</h2>
+
+    <img
+    src="http://127.0.0.1:5050/video_feed"
+    width="700">
+
+    </div>
+
+    <div class="card">
+
     <h2>System Status</h2>
 
     <div class="stat">
@@ -145,6 +201,6 @@ def snapshot(filename):
 
 if __name__ == "__main__":
     app.run(
-        debug=True,
+        debug=False,
         port=5050
     )
