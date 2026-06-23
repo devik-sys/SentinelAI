@@ -11,6 +11,7 @@ face_cascade = cv2.CascadeClassifier(
 )
 
 cap = cv2.VideoCapture(0)
+
 alert_sent = False
 
 while True:
@@ -27,39 +28,106 @@ while True:
 
     faces = face_cascade.detectMultiScale(
         gray,
-        1.3,
-        5
+        scaleFactor=1.3,
+        minNeighbors=5
     )
 
     for (x, y, w, h) in faces:
 
-        face = gray[y:y+h, x:x+w]
+        face = gray[
+            y:y+h,
+            x:x+w
+        ]
 
-        label, confidence = recognizer.predict(face)
+        face = cv2.resize(
+            face,
+            (200, 200)
+        )
 
-        if confidence < 80:
+        label, confidence = recognizer.predict(
+            face
+        )
+
+        print(
+            f"Label: {label} | Raw Confidence: {confidence}"
+        )
+
+        match_percent = max(
+            0,
+            min(
+                100,
+                round(100 - confidence, 1)
+            )
+        )
+
+        if confidence < 85:
 
             name = "ACCESS GRANTED"
 
-            color = (0, 255, 0)
+            color = (
+                0,
+                255,
+                0
+            )
+
+            alert_sent = False
 
         else:
 
             name = "INTRUDER ALERT"
 
-            color = (0, 0, 255)
+            color = (
+                0,
+                0,
+                255
+            )
+
+            if not alert_sent:
+
+                timestamp = datetime.now().strftime(
+                    "%Y%m%d_%H%M%S"
+                )
+
+                filename = (
+                    f"snapshots/intruder_{timestamp}.jpg"
+                )
+
+                cv2.imwrite(
+                    filename,
+                    frame
+                )
+
+                with open(
+                    "intrusion_log.txt",
+                    "a"
+                ) as log:
+
+                    log.write(
+                        f"{datetime.now()} - Unknown Person Detected - {filename}\n"
+                    )
+
+                print(
+                    "ALERT: Unknown Person Detected!"
+                )
+
+                alert_sent = True
+
+        display_text = (
+            f"{name} "
+            f"{match_percent}%"
+        )
 
         cv2.rectangle(
-                frame,
-                (x, y),
-                (x+w, y+h),
-                color,
-                2
-            )
+            frame,
+            (x, y),
+            (x+w, y+h),
+            color,
+            2
+        )
 
         cv2.putText(
             frame,
-            name,
+            display_text,
             (x, y-10),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
@@ -67,34 +135,12 @@ while True:
             2
         )
 
-        if not alert_sent:
-
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-                filename = f"unknown_faces/unknown_{timestamp}.jpg"
-
-                cv2.imwrite(
-                    filename,
-                    frame
-                )
-
-                print(f"Saved: {filename}")
-
-                with open("intrusion_log.txt", "a") as log:
-
-                    log.write(
-                        f"{datetime.now()} - Unknown Person Detected - {filename}\n"
-                    )
-
-                print("ALERT: Unknown Person Detected!")
-
-                alert_sent = True
-
     if len(faces) == 0:
+
         alert_sent = False
 
     cv2.imshow(
-        "Face Recognition",
+        "SentinelAI",
         frame
     )
 

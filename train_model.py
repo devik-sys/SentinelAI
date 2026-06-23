@@ -9,12 +9,31 @@ labels = []
 
 for image_name in os.listdir(data_path):
 
-    image_path = os.path.join(data_path, image_name)
+    image_path = os.path.join(
+        data_path,
+        image_name
+    )
 
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(
+        image_path,
+        cv2.IMREAD_GRAYSCALE
+    )
+
+    if img is None:
+        continue
+
+    img = cv2.resize(
+        img,
+        (200, 200)
+    )
 
     faces.append(img)
+
     labels.append(0)
+
+print(
+    f"Training on {len(faces)} images"
+)
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -23,6 +42,10 @@ recognizer.train(
     np.array(labels)
 )
 
-recognizer.save("trainer.yml")
+recognizer.save(
+    "trainer.yml"
+)
 
-print("Model Trained Successfully!")
+print(
+    "Model Trained Successfully!"
+)
