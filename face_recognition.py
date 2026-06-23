@@ -7,6 +7,8 @@ import smtplib
 from email.message import EmailMessage
 from email_config import EMAIL_ADDRESS, EMAIL_PASSWORD
 
+
+
 # ----------------------------
 # CREATE FOLDERS
 # ----------------------------
@@ -37,14 +39,9 @@ def send_email_alert(snapshot_path):
             f"""
 🚨 SENTINELAI ALERT 🚨
 
-Motion and face detected.
+Unknown person detected.
 
 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-Action Taken:
-✅ Snapshot Captured
-✅ Video Recording Started
-✅ Email Alert Sent
 """
         )
 
@@ -52,14 +49,14 @@ Action Taken:
 
             image_data = image_file.read()
 
-            image_name = os.path.basename(snapshot_path)
+        image_name = os.path.basename(snapshot_path)
 
-            msg.add_attachment(
-                image_data,
-                maintype="image",
-                subtype="jpeg",
-                filename=image_name
-            )
+        msg.add_attachment(
+            image_data,
+            maintype="image",
+            subtype="jpeg",
+            filename=image_name
+        )
 
         with smtplib.SMTP_SSL(
             "smtp.gmail.com",
@@ -261,7 +258,6 @@ while cam.isOpened():
     # ----------------------------
     # MOTION + FACE REQUIRED
     # ----------------------------
-
 
     if motion_detected and len(faces) > 0 and not known_face_detected:
 
