@@ -2,40 +2,53 @@ import cv2
 import os
 import numpy as np
 
-data_path = "faces/devi"
+recognizer = cv2.face.LBPHFaceRecognizer_create()
 
 faces = []
 labels = []
 
-for image_name in os.listdir(data_path):
+people = {
+    "devi": 0,
+    "mama": 1,
+    "dada": 2
+}
 
-    image_path = os.path.join(
-        data_path,
-        image_name
+for person_name, label in people.items():
+
+    person_path = os.path.join(
+        "faces",
+        person_name
     )
 
-    img = cv2.imread(
-        image_path,
-        cv2.IMREAD_GRAYSCALE
-    )
-
-    if img is None:
+    if not os.path.exists(person_path):
         continue
 
-    img = cv2.resize(
-        img,
-        (200, 200)
-    )
+    for image_name in os.listdir(person_path):
 
-    faces.append(img)
+        image_path = os.path.join(
+            person_path,
+            image_name
+        )
 
-    labels.append(0)
+        img = cv2.imread(
+            image_path,
+            cv2.IMREAD_GRAYSCALE
+        )
+
+        if img is None:
+            continue
+
+        img = cv2.resize(
+            img,
+            (200, 200)
+        )
+
+        faces.append(img)
+        labels.append(label)
 
 print(
     f"Training on {len(faces)} images"
 )
-
-recognizer = cv2.face.LBPHFaceRecognizer_create()
 
 recognizer.train(
     faces,
@@ -47,5 +60,5 @@ recognizer.save(
 )
 
 print(
-    "Model Trained Successfully!"
+    "Multi-user model trained!"
 )

@@ -1,5 +1,4 @@
 import cv2
-import os
 from datetime import datetime
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -9,6 +8,12 @@ face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades +
     "haarcascade_frontalface_default.xml"
 )
+
+people = {
+    0: "Devi",
+    1: "Mama",
+    2: "Dada"
+}
 
 cap = cv2.VideoCapture(0)
 
@@ -34,19 +39,14 @@ while True:
 
     for (x, y, w, h) in faces:
 
-        face = gray[
-            y:y+h,
-            x:x+w
-        ]
+        face = gray[y:y+h, x:x+w]
 
         face = cv2.resize(
             face,
             (200, 200)
         )
 
-        label, confidence = recognizer.predict(
-            face
-        )
+        label, confidence = recognizer.predict(face)
 
         print(
             f"Label: {label} | Raw Confidence: {confidence}"
@@ -60,15 +60,14 @@ while True:
             )
         )
 
-        if confidence < 85:
+        if confidence < 55:
 
-            name = "ACCESS GRANTED"
-
-            color = (
-                0,
-                255,
-                0
+            name = people.get(
+                label,
+                "Known User"
             )
+
+            color = (0, 255, 0)
 
             alert_sent = False
 
@@ -76,11 +75,7 @@ while True:
 
             name = "INTRUDER ALERT"
 
-            color = (
-                0,
-                0,
-                255
-            )
+            color = (0, 0, 255)
 
             if not alert_sent:
 
@@ -113,8 +108,7 @@ while True:
                 alert_sent = True
 
         display_text = (
-            f"{name} "
-            f"{match_percent}%"
+            f"{name} {match_percent}%"
         )
 
         cv2.rectangle(
