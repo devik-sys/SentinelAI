@@ -1,6 +1,7 @@
 import os
 import time
 import cv2
+import subprocess
 
 from flask import (
     Flask,
@@ -123,6 +124,10 @@ def stats():
 
 @app.route("/")
 def home():
+
+    subprocess.run(
+        ["python3", "generate_chart.py"]
+    )
 
     try:
 
@@ -272,6 +277,16 @@ width="700">
 
 <div class="card">
 
+<h2>📊 Intrusion Analytics</h2>
+
+<img
+src="/chart?t={time.time()}"
+width="700">
+
+</div>
+
+<div class="card">
+
 <h2>📜 Intrusion History</h2>
 
 <pre id="history">
@@ -326,6 +341,13 @@ def snapshot(filename):
 
     return send_file(
         image_path
+    )
+
+@app.route("/chart")
+def chart():
+
+    return send_file(
+        "chart.png"
     )
 
 if __name__ == "__main__":
