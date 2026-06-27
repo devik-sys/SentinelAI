@@ -11,11 +11,21 @@ from flask import (
 
 app = Flask(__name__)
 
-print(os.getcwd())
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
 
-# -----------------------------
-# Camera
-# -----------------------------
+LOG_FILE = os.path.join(
+    BASE_DIR,
+    "intrusion_log.txt"
+)
+
+SNAPSHOT_DIR = os.path.join(
+    BASE_DIR,
+    "snapshots"
+)
 
 camera = cv2.VideoCapture(0)
 
@@ -28,12 +38,6 @@ camera.set(
     cv2.CAP_PROP_FRAME_HEIGHT,
     480
 )
-
-print(
-    "Camera Open:",
-    camera.isOpened()
-)
-
 
 def generate_frames():
 
@@ -58,11 +62,6 @@ def generate_frames():
             b'\r\n'
         )
 
-
-# -----------------------------
-# Live Camera Feed
-# -----------------------------
-
 @app.route("/video_feed")
 def video_feed():
 
@@ -72,18 +71,13 @@ def video_feed():
         "multipart/x-mixed-replace; boundary=frame"
     )
 
-
-# -----------------------------
-# Dashboard API
-# -----------------------------
-
 @app.route("/stats")
 def stats():
 
     try:
 
         with open(
-            "intrusion_log.txt",
+            LOG_FILE,
             "r"
         ) as file:
 
@@ -103,14 +97,14 @@ def stats():
 
     latest_image = ""
 
-    if os.path.exists("snapshots"):
+    if os.path.exists(SNAPSHOT_DIR):
 
         images = sorted(
-            os.listdir("snapshots"),
+            os.listdir(SNAPSHOT_DIR),
             key=lambda x:
             os.path.getmtime(
                 os.path.join(
-                    "snapshots",
+                    SNAPSHOT_DIR,
                     x
                 )
             )
@@ -123,13 +117,9 @@ def stats():
     return jsonify({
         "count": intrusion_count,
         "event": last_event,
-        "image": latest_image
+        "image": latest_image,
+        "history": logs[-10:]
     })
-
-
-# -----------------------------
-# Dashboard
-# -----------------------------
 
 @app.route("/")
 def home():
@@ -137,7 +127,7 @@ def home():
     try:
 
         with open(
-            "intrusion_log.txt",
+            LOG_FILE,
             "r"
         ) as file:
 
@@ -155,46 +145,44 @@ def home():
         else "No Events"
     )
 
-    latest_image = ""
+    gallery_html = ""
 
-    if os.path.exists("snapshots"):
+    if os.path.exists(SNAPSHOT_DIR):
 
         images = sorted(
-            os.listdir("snapshots"),
+            os.listdir(SNAPSHOT_DIR),
             key=lambda x:
             os.path.getmtime(
                 os.path.join(
-                    "snapshots",
+                    SNAPSHOT_DIR,
                     x
                 )
-            )
-        )
+            ),
+            reverse=True
+        )[:5]
 
-        if images:
+        for image in images:
 
-            latest_image = images[-1]
+            gallery_html += f"""
+            <img
+            src="/snapshot/{image}?t={time.time()}"
+            width="220"
+            style="
+            margin:10px;
+            border-radius:10px;
+            ">
+            """
 
-    image_html = ""
-
-    if latest_image:
-
-        image_html = f"""
+        gallery_html = f"""
         <div class="card">
-        <h2>📸 Latest Snapshot</h2>
-
-        <img
-        id="snapshot"
-        src="/snapshot/{latest_image}?t={time.time()}"
-        width="500">
-
+        <h2>📸 Intruder Gallery</h2>
+        {gallery_html}
         </div>
         """
 
     return f"""
 <!DOCTYPE html>
-
 <html>
-
 <head>
 
 <title>SentinelAI Dashboard</title>
@@ -268,7 +256,7 @@ width="700">
 
 </div>
 
-{image_html}
+{gallery_html}
 
 <div class="card">
 
@@ -277,6 +265,18 @@ width="700">
 <pre id="event">
 
 {last_event}
+
+</pre>
+
+</div>
+
+<div class="card">
+
+<h2>📜 Intrusion History</h2>
+
+<pre id="history">
+
+{"".join(logs[-10:])}
 
 </pre>
 
@@ -298,17 +298,12 @@ document.getElementById(
 "event"
 ).innerText = data.event;
 
-if(data.image) {{
-
 document.getElementById(
-"snapshot"
-).src =
-"/snapshot/" +
-data.image +
-"?t=" +
-Date.now();
+"history"
+).innerText =
+data.history.join("");
 
-}}
+location.reload();
 
 }});
 
@@ -321,28 +316,17 @@ Date.now();
 </html>
 """
 
-
-# -----------------------------
-# Snapshot Route
-# -----------------------------
-
 @app.route("/snapshot/<filename>")
 def snapshot(filename):
 
     image_path = os.path.join(
-        os.getcwd(),
-        "snapshots",
+        SNAPSHOT_DIR,
         filename
     )
 
     return send_file(
         image_path
     )
-
-
-# -----------------------------
-# Run App
-# -----------------------------
 
 if __name__ == "__main__":
 
