@@ -123,7 +123,26 @@ def stats():
     })
 
 @app.route("/")
+
 def home():
+
+    last_user = "Unknown"
+    last_confidence = "0%"
+
+    if os.path.exists("../last_user.txt"):
+
+        with open(
+            "../last_user.txt",
+            "r"
+        ) as file:
+
+            data = file.read().split("|")
+
+            if len(data) == 2:
+
+                last_user = data[0]
+
+                last_confidence = data[1]
 
     subprocess.run(
         ["python3", "generate_chart.py"]
@@ -303,6 +322,27 @@ id="count">
 </div>
 
 </div>
+
+<div class="card">
+
+<h2>👤 Last Recognized User</h2>
+
+<div class="stat">
+
+{last_user}
+
+</div>
+
+<p>
+
+Confidence:
+{last_confidence}
+
+</p>
+
+</div>
+
+<div class="card">
 
 <h2>🎥 Live Camera Feed</h2>
 

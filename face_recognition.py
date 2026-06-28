@@ -7,6 +7,7 @@ import smtplib
 from email.message import EmailMessage
 from email_config import EMAIL_ADDRESS, EMAIL_PASSWORD
 
+LAST_USER_FILE = "last_user.txt"
 
 
 # ----------------------------
@@ -213,9 +214,24 @@ while cam.isOpened():
 
         label, confidence = recognizer.predict(face)
 
-        if confidence < 100:
+        if confidence < 85:
 
             known_face_detected = True
+
+            name = f"User_{label}"
+
+            match_percent = round(
+                max(0, min(100, 100 - confidence))
+            )
+
+            with open(
+                LAST_USER_FILE,
+                "w"
+            ) as file:
+
+                file.write(
+                    f"{name}|{match_percent}"
+                )
 
             cv2.rectangle(
                 frame1,
