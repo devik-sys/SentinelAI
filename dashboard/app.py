@@ -195,26 +195,63 @@ def home():
 <style>
 
 body {{
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 40px;
+background:#0f172a;
+color:white;
+font-family:Arial,sans-serif;
+margin:20px;
+}}
+
+h1 {{
+text-align:center;
 }}
 
 .card {{
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(0,0,0,0.3);
 }}
 
 .stat {{
-    font-size: 30px;
-    font-weight: bold;
+font-size:40px;
+font-weight:bold;
+color:#38bdf8;
 }}
 
 img {{
-    border-radius: 10px;
+border-radius:10px;
+}}
+
+.grid {{
+display:grid;
+grid-template-columns:
+repeat(3,1fr);
+gap:20px;
+}}
+
+.small-card {{
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,0.3);
+}}
+
+pre {{
+color:white;
+}}
+
+.status-dot{{
+width:30px;
+height:30px;
+background:#00ff00;
+border-radius:50%;
+margin:auto;
+box-shadow:
+0 0 10px #00ff00,
+0 0 20px #00ff00,
+0 0 30px #00ff00;
 }}
 
 </style>
@@ -223,11 +260,13 @@ img {{
 
 <body>
 
-<h1>🛡️ SentinelAI Dashboard</h1>
+<h1>🛡️ SentinelAI Security Center</h1>
 
-<div class="card">
+<div class="grid">
 
-<h2>Total Intrusions</h2>
+<div class="small-card">
+
+<h3>Total Intrusions</h3>
 
 <div
 class="stat"
@@ -239,7 +278,31 @@ id="count">
 
 </div>
 
-<div class="card">
+<div class="small-card">
+
+<h3>Status</h3>
+
+<div class="stat">
+
+<div class="status-dot"></div>
+
+</div>
+
+</div>
+
+<div class="small-card">
+
+<h3>Last Event</h3>
+
+<div>
+
+{last_event}
+
+</div>
+
+</div>
+
+</div>
 
 <h2>🎥 Live Camera Feed</h2>
 
