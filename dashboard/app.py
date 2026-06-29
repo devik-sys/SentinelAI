@@ -126,6 +126,17 @@ def stats():
 
 def home():
 
+    user_stats = ""
+
+    if os.path.exists("../user_stats.txt"):
+
+        with open(
+            "../user_stats.txt",
+            "r"
+        ) as file:
+
+            user_stats = file.read()
+
     last_user = "Unknown"
     last_confidence = "0%"
 
@@ -385,6 +396,18 @@ width="700">
 <img
 src="/chart?t={time.time()}"
 width="700">
+
+</div>
+
+<div class="card">
+
+<h2>📊 User Analytics</h2>
+
+<pre>
+
+{user_stats}
+
+</pre>
 
 </div>
 
