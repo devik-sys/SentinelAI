@@ -7,7 +7,14 @@ import smtplib
 from email.message import EmailMessage
 from email_config import EMAIL_ADDRESS, EMAIL_PASSWORD
 
+names = {
+    0: "Devi",
+    1: "Dada",
+    2: "Mama"
+}
+
 LAST_USER_FILE = "last_user.txt"
+USER_STATS_FILE = "user_stats.txt"
 
 
 # ----------------------------
@@ -25,6 +32,9 @@ os.makedirs("logs", exist_ok=True)
 
 last_email_time = 0
 EMAIL_COOLDOWN = 60
+
+last_stats_update = 0
+STATS_COOLDOWN = 10
 
 def send_email_alert(snapshot_path):
 
@@ -77,6 +87,42 @@ Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
         print("Email Error:", e)
 
+
+def update_user_stats(name):
+
+    stats = {}
+
+    if os.path.exists(USER_STATS_FILE):
+
+        with open(
+            USER_STATS_FILE,
+            "r"
+        ) as file:
+
+            for line in file:
+
+                if "=" in line:
+
+                    key, value = line.strip().split("=")
+
+                    stats[key] = int(value)
+
+    if name not in stats:
+
+        stats[name] = 0
+
+    stats[name] += 1
+
+    with open(
+        USER_STATS_FILE,
+        "w"
+    ) as file:
+
+        for key, value in stats.items():
+
+            file.write(
+                f"{key}={value}\n"
+            )
 
 def write_log(message):
 
@@ -214,11 +260,14 @@ while cam.isOpened():
 
         label, confidence = recognizer.predict(face)
 
+        name = names.get(
+            label,
+            "Unknown"
+        )
+
         if confidence < 85:
 
             known_face_detected = True
-
-            name = f"User_{label}"
 
             match_percent = round(
                 max(0, min(100, 100 - confidence))
@@ -232,6 +281,16 @@ while cam.isOpened():
                 file.write(
                     f"{name}|{match_percent}"
                 )
+            
+            if (
+                time.time()
+                - last_stats_update
+                > STATS_COOLDOWN
+            ):
+
+                update_user_stats(name)
+
+                last_stats_update = time.time()
 
             cv2.rectangle(
                 frame1,
@@ -243,7 +302,7 @@ while cam.isOpened():
 
             cv2.putText(
                 frame1,
-                "ACCESS GRANTED",
+                f"{name} | {round(confidence)}",
                 (x, y-10),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
@@ -252,6 +311,15 @@ while cam.isOpened():
             )
 
         else:
+            if (
+                time.time()
+                - last_stats_update
+                > STATS_COOLDOWN
+            ):
+
+                update_user_stats("Unknown")
+
+                last_stats_update = time.time()
 
             cv2.rectangle(
                 frame1,
