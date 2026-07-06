@@ -26,6 +26,7 @@ def recognize(frame):
 
         return "Unknown"
 
-    except:
+    except Exception as e:
 
+        print("Recognition Error:", e)
         return "Unknown"
