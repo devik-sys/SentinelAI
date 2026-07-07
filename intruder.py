@@ -1,3 +1,15 @@
+"""
+SentinelAI Motion Detection Module
+
+Features:
+✔ Motion Detection
+✔ Face Detection
+✔ Snapshot Capture
+✔ Video Recording
+✔ Email Alerts
+✔ Event Logging
+"""
+
 from datetime import datetime
 import cv2
 import time
@@ -35,40 +47,25 @@ def send_email_alert(snapshot_path):
         msg["From"] = EMAIL_ADDRESS
         msg["To"] = EMAIL_ADDRESS
 
-        msg.set_content(
-            f"""
+        msg.set_content(f"""
 🚨 SENTINELAI ALERT 🚨
 
-Motion and face detected.
+Motion + Face Detected
 
-Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Time:
+{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+""")
 
-Action Taken:
-✅ Snapshot Captured
-✅ Video Recording Started
-✅ Email Alert Sent
-
-Check SentinelAI recordings and snapshots.
-"""
-        )
-
-        with open(snapshot_path, "rb") as image_file:
-
-            image_data = image_file.read()
-
-            image_name = os.path.basename(snapshot_path)
+        with open(snapshot_path, "rb") as image:
 
             msg.add_attachment(
-                image_data,
+                image.read(),
                 maintype="image",
                 subtype="jpeg",
-                filename=image_name
+                filename=os.path.basename(snapshot_path)
             )
 
-        with smtplib.SMTP_SSL(
-            "smtp.gmail.com",
-            465
-        ) as smtp:
+        with smtplib.SMTP_SSL("smtp.gmail.com",465) as smtp:
 
             smtp.login(
                 EMAIL_ADDRESS,
@@ -77,29 +74,11 @@ Check SentinelAI recordings and snapshots.
 
             smtp.send_message(msg)
 
-        print("📧 Email Alert Sent!")
+        print("📧 Email Sent")
 
     except Exception as e:
 
-        print("Email Error:", e)
-
-        with smtplib.SMTP_SSL(
-            "smtp.gmail.com",
-            465
-        ) as smtp:
-
-            smtp.login(
-                EMAIL_ADDRESS,
-                EMAIL_PASSWORD
-            )
-
-            smtp.send_message(msg)
-
-        print("📧 Email Alert Sent!")
-
-    except Exception as e:
-
-        print("Email Error:", e)
+        print("Email Error:",e)
 
 def write_log(message):
 
@@ -251,7 +230,6 @@ while cam.isOpened():
                 (frame_width, frame_height)
             )
             
-            intrusion_count += 1
 
             write_log(
                 f"Recording Started | Intrusion #{intrusion_count}"
@@ -417,7 +395,8 @@ while cam.isOpened():
 # ----------------------------
 
 cam.release()
-out.release()
+if out:
+    out.release()
 
 
 
