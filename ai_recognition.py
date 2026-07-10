@@ -9,7 +9,7 @@ def recognize(frame):
         result = DeepFace.find(
             img_path=frame,
             db_path="faces",
-            model_name="Facenet",
+            model_name="ArcFace",
             enforce_detection=False,
             silent=True
         )

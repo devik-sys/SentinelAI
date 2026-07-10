@@ -18,8 +18,8 @@ while True:
         result = DeepFace.find(
             img_path=frame,
             db_path="faces",
-            model_name="Facenet",
-            enforce_detection=False,
+            model_name="ArcFace",
+            enforce_detection=True,
             silent=True
         )
 
@@ -38,7 +38,7 @@ while True:
 
                 name = identity.split("/")[1]
 
-                if distance < 0.35:
+                if distance < 0.20:
 
                     cv2.putText(
                         frame,
@@ -75,17 +75,6 @@ while True:
                     (0,0,255),
                     2
                 )
-
-            cv2.putText(
-                frame,
-                name,
-                (40, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2
-            )
-
         else:
 
             cv2.putText(
